@@ -25,6 +25,7 @@ raw_pdf['vote'] = raw_pdf['vote'].fillna(value=0)
 
 
 # TODO: Average Review per Product
+
 def average_review(df):
     unique_asin = len(df['asin'].unique())
     total_review = len(df)
@@ -44,10 +45,10 @@ raw_pdf['review_text_len'] = raw_pdf[['review_text']].astype(str).applymap(len)
 
 def show_review_text_stat(df):
     stat = df['review_text_len'].describe().to_dict()
-    weired_reviews = len(df[df['review_text_len'] == 1])
+    weired_reviews = len(df[df['review_text_len'] <= 1])
     print("Review Length Stat")
     pprint(stat)
-    print(f"Reviews with length one: {weired_reviews}")
+    print(f"Reviews with length one or less: {weired_reviews}")
 
 
 show_review_text_stat(raw_pdf)
@@ -87,6 +88,6 @@ top_reviews_2017 = raw_pdf[(raw_pdf['review_year'] == 2017) & (raw_pdf['vote'] >
 column_list = ['unix_review_time', 'review_time', 'summary']
 raw_pdf = raw_pdf.drop(columns=column_list, axis=1)
 
-# Store The Snapshot
+# TODO: Store The Snapshot
 snapshot_path = SNAPSHOT.joinpath('pandas', 'snapshot_chapter03.json')
 raw_pdf.to_json(snapshot_path, orient='records')

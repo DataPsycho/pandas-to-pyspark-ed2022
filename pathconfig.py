@@ -21,6 +21,13 @@ def create_path_snapshot() -> Path:
     return SNAPSHOT.joinpath(path_fixed)
 
 
+# TODO: Store The Snapshot
+def create_path_snapshot_spark():
+    path_fixed = 'data/snapshot/pyspark/snapshot_{}'
+    current_unix_time = int(time.time())
+    return path_fixed.format(current_unix_time)
+
+
 def load_latest_parquet_path() -> Path:
     """
     :return: path to latest parquet file storage
