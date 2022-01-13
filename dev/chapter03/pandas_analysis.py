@@ -26,10 +26,15 @@ raw_pdf['vote'] = raw_pdf['vote'].fillna(value=0)
 
 # TODO: Average Review per Product
 
-def average_review(df):
+def average_review(df: pd.DataFrame) -> float:
+    """
+    Calculate average review per product
+    :param df: Pandas dataframe
+    :return: Average
+    """
     unique_asin = len(df['asin'].unique())
     total_review = len(df)
-    avg_review = unique_asin/total_review
+    avg_review = total_review / unique_asin
     print(f"Average Review per product {avg_review:.2f}")
     return avg_review
 
@@ -43,7 +48,12 @@ review_by_product = raw_pdf.groupby('asin')['asin'].count()
 raw_pdf['review_text_len'] = raw_pdf[['review_text']].astype(str).applymap(len)
 
 
-def show_review_text_stat(df):
+def show_review_text_stat(df: pd.DataFrame) -> None:
+    """
+    Show the distribution of review text length
+    :param df: A dataframe
+    :return: Nothing
+    """
     stat = df['review_text_len'].describe().to_dict()
     weired_reviews = len(df[df['review_text_len'] <= 1])
     print("Review Length Stat")
@@ -82,6 +92,33 @@ print(raw_pdf['vote'].describe())
 raw_pdf['vote'] = raw_pdf['vote'].apply(lambda x: int(str(x).replace(',', '')))
 raw_pdf['vote'] = raw_pdf['vote'].astype(int)
 top_reviews_2017 = raw_pdf[(raw_pdf['review_year'] == 2017) & (raw_pdf['vote'] >= 20)]
+
+
+# TODO: Compare Total Monthly Review of 2017 and 2018
+total_review_by_mth_df = (
+    raw_pdf
+    .groupby(['review_year', 'review_month'])
+    .agg(total_review=("asin", "count"))
+    .reset_index()
+)
+
+total_review_2016 = total_review_by_mth_df[total_review_by_mth_df["review_year"] == 2016]
+total_review_2017 = total_review_by_mth_df[total_review_by_mth_df["review_year"] == 2017]
+merged_20_16_17 = (
+    total_review_2016
+    .merge(total_review_2017, on=["review_month"], suffixes=['_2016', '_2017'])
+    .sort_values("review_month")
+)
+
+# TODO: Convert Wide format data into Long
+merged_20_1617_long = (
+    merged_20_16_17
+    .melt(id_vars=["review_month"], value_vars=["total_review_2016", "total_review_2017"])
+)
+merged_20_1617_wide = (
+    merged_20_1617_long
+    .pivot(index="review_month", columns="variable", values="value").reset_index()
+)
 
 
 # TODO: Drop The columns we Do not Need

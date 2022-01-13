@@ -34,14 +34,19 @@ main_df = main_df.fillna({'vote': 0})
 
 # TODO: Average Review per Product
 def average_review(df: SparkDf) -> float:
+    """
+    Calculate average review per product
+    :param df: Pandas dataframe
+    :return: Average
+    """
     unique_asin = df.select('asin').distinct().count()
     total_review = df.count()
-    avg_review = unique_asin / total_review
+    avg_review = total_review / unique_asin
     print(f"Average Review per product {avg_review:.2f}")
     return avg_review
 
 
-average_review(main_df)
+mean_over_all_review = average_review(main_df)
 
 # TODO: Total Number of Review by Product
 review_by_product = main_df.groupby('asin').count()
@@ -59,7 +64,7 @@ def show_review_text_stat(df: SparkDf) -> None:
     :return: Nothing
     """
     summary_df = df.select('review_text_len').summary("count", "min", "25%", "75%", "max")
-    summary = summary_df.rdd.map(lambda row: row.asDict(True)).collect()
+    summary = summary_df.rdd.map(lambda row: row.asDict(recursive=True)).collect()
     print("Review Length Stat")
     pprint(summary)
     weired_reviews = df.filter(col('review_text_len') <= 1).count()
@@ -68,10 +73,6 @@ def show_review_text_stat(df: SparkDf) -> None:
 
 show_review_text_stat(main_df)
 
-
-# TODO: Median Number of Reviews per Year
-main_df = main_df.withColumn('review_year', fn.year(col('reviewed_at')))
-main_df = main_df.withColumn('review_month', fn.month(col('reviewed_at')))
 
 median_review_by_year_df = (
     main_df
@@ -101,6 +102,38 @@ top_reviews_2017 = (
     )
 )
 
+# TODO: Compare Total Monthly Review of 2017 and 2018
+total_review_by_mth_df = (
+    main_df
+    .groupBy('review_year', 'review_month')
+    .agg(fn.count(col("asin")).alias("total_review"))
+    .orderBy('review_year', 'review_month')
+)
+
+total_review_2016 = total_review_by_mth_df.filter(col("review_year") == 2016)
+total_review_2017 = total_review_by_mth_df.filter(col("review_year") == 2017)
+
+merged_20_16_17 = (
+    total_review_2016
+    .select(
+        "review_month",
+        col("total_review").alias("total_review_2016")
+    )
+    .join(
+        total_review_2017.select("review_month", col("total_review").alias("total_review_2017")),
+        on="review_month"
+    )
+)
+
+merged_20_16_17_united = total_review_2016.union(total_review_2017)
+merged_20_16_17_pivoted = (
+    merged_20_16_17_united
+    .groupBy("review_month")
+    .pivot("review_year")
+    .sum("total_review")
+    .orderBy("review_month")
+)
+
 
 # TODO: Drop The columns we Do not Need
 column_list = ['unix_review_time', 'review_time', 'summary']
@@ -108,7 +141,6 @@ main_df = main_df.drop(*column_list)
 
 
 # TODO: Store The Snapshot
-
 PATH_SNAPSHOT = create_path_snapshot_spark()
 main_df = main_df.repartition('review_year', 'review_month').sortWithinPartitions("asin")
 main_df.write.partitionBy('review_year', 'review_month').mode("overwrite").parquet(PATH_SNAPSHOT)
