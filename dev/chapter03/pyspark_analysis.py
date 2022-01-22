@@ -125,7 +125,65 @@ merged_20_16_17 = (
     )
 )
 
+
+# TODO: Functional representation of same problem
+def aggregate_by_year(df: SparkDf) -> SparkDf:
+    """
+    Aggregate the data frame by year and month
+    :param df: A DataFrame
+    :return: A transformed DataFrame
+    """
+    _df = (
+        df
+        .groupBy('review_year', 'review_month')
+        .agg(fn.count(col("asin")).alias("total_review"))
+        .orderBy('review_year', 'review_month')
+    )
+    return _df
+
+
+def compare_monthly_total_review_by_year(df: SparkDf, year_x: int, year_y: int) -> SparkDf:
+    """
+    Compare two years of total review
+    :param df: A DataFrame
+    :param year_x: base Year to Compare
+    :param year_y: Ahead year to Compare from Base year
+    :return: A transformed DataFrame
+    """
+    year_x_df = df.filter(col("review_year") == year_x)
+    year_y_df = df.filter(col("review_year") == year_y)
+
+    merged_df = (
+        year_x_df
+        .select(
+            "review_month",
+            col("total_review").alias(f"total_review_{year_x}")
+        ).join(
+            year_y_df.select("review_month", col("total_review").alias(f"total_review_{year_y}")),
+            on="review_month"
+        )
+    )
+    return merged_df
+
+
+def execute_pipeline(df: SparkDf, year_x: int, year_y: int) -> SparkDf:
+    """
+    An execution pipeline example
+    :param df: A DataFrame
+    :param year_x: base Year to Compare
+    :param year_y: Ahead year to Compare from Base year
+    :return: A transformed DataFrame
+    """
+    _df = aggregate_by_year(df)
+    _df = compare_monthly_total_review_by_year(df=_df, year_x=year_x, year_y=year_y)
+    return _df
+
+
+temp_df = execute_pipeline(main_df, 2016, 2017)
+
+
 merged_20_16_17_united = total_review_2016.union(total_review_2017)
+
 merged_20_16_17_pivoted = (
     merged_20_16_17_united
     .groupBy("review_month")

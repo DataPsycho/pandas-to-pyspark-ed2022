@@ -104,11 +104,13 @@ total_review_by_mth_df = (
 
 total_review_2016 = total_review_by_mth_df[total_review_by_mth_df["review_year"] == 2016]
 total_review_2017 = total_review_by_mth_df[total_review_by_mth_df["review_year"] == 2017]
+
 merged_20_16_17 = (
     total_review_2016
     .merge(total_review_2017, on=["review_month"], suffixes=['_2016', '_2017'])
     .sort_values("review_month")
 )
+
 
 # TODO: Convert Wide format data into Long
 merged_20_1617_long = (
