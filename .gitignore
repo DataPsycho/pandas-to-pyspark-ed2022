@@ -1,4 +1,6 @@
-data
+data/raw/*.json
+data/snapshot/pandas/*.json
+data/snapshot/pyspark/snapshot_*
 .idea
 
 # Byte-compiled / optimized / DLL files
