@@ -25,7 +25,6 @@ raw_pdf['vote'] = raw_pdf['vote'].fillna(value=0)
 
 
 # TODO: Average Review per Product
-
 def average_review(df: pd.DataFrame) -> float:
     """
     Calculate average review per product
