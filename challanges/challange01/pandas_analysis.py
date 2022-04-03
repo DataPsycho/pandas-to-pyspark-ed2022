@@ -9,7 +9,7 @@ def select_random(scope: list) -> t.Optional[str]:
     return np.random.choice(scope)
 
 
-def data_generator(sample_size=25) -> t.Dict:
+def data_generator(sample_size=20) -> t.Dict:
     """
     Generate random data
     :return: Data with schema definition of pharma product sales
@@ -42,7 +42,7 @@ def create_sample_df(sample_size=20) -> pd.DataFrame:
     return df
 
 
-MAIN_DF = create_sample_df()
+MAIN_DF = create_sample_df(50)
 
 
 def impute_missing(df: pd.DataFrame) -> pd.DataFrame:
@@ -59,6 +59,11 @@ def impute_missing(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def total_units_available(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Aggregate the input dataframe to have total units for each combination
+    :param df: Input DataFrame
+    :return: Aggregated DataFrame by company, product, depository_id
+    """
     _df = (
         df.groupby(['company', 'product', 'depository_id'])
         .agg({"unit": "sum"})
@@ -69,4 +74,4 @@ def total_units_available(df: pd.DataFrame) -> pd.DataFrame:
 
 imputed_df = impute_missing(MAIN_DF)
 summary_df = total_units_available(imputed_df)
-summary_df.to_csv("./data/challanges/challange01/summary.csv")
+summary_df.to_csv("./data/challanges/challange01/summary.csv", index=False)
