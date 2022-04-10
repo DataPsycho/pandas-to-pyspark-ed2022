@@ -1,0 +1,29 @@
+file_path:
+  raw_data_hnk_main: data/raw/sample_Home_and_Kitchen_5.json
+  raw_data_hnk_meta: data/raw/sample_meta_Home_and_Kitchen.json
+  snapshot_main: data/snapshot/pyspark/snapshot_hk_001_main
+  snapshot_meta: data/snapshot/pyspark/snapshot_hk_001_meta
+column_rename_map_main:
+  overall: overall
+  verified: verified
+  reviewTime: review_time
+  reviewerID: reviewer_id
+  asin: asin
+  reviewerName: reviewer_name
+  reviewText: review_text
+  summary: summary
+  unixReviewTime: unix_review_time
+  style: style
+  vote: vote
+  image: image
+selected_column_main: [
+    reviewer_id,
+    asin,
+    review_text,
+    summary,
+    verified,
+    overall,
+    vote,
+    unix_review_time,
+    review_time
+  ]
