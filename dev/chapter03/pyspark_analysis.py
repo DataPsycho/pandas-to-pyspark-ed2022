@@ -27,7 +27,6 @@ main_df.show(10)
 
 # TODO: Convert Unix Review Time to Python Datetime
 main_df = main_df.withColumn('reviewed_at', fn.from_unixtime(col('unix_review_time')))
-
 main_df = main_df.withColumn("reviewed_year", fn.year(col("reviewed_at")))
 main_df = main_df.withColumn("reviewed_month", fn.month(col("reviewed_at")))
 

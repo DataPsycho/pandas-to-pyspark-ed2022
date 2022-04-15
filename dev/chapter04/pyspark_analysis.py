@@ -40,7 +40,7 @@ def summarise_review(text: str) -> dict:
 
 udf_summarise_text = fn.udf(
     f=summarise_review,
-    returnType= st.StructType([
+    returnType=st.StructType([
         st.StructField("len", st.IntegerType()),
         st.StructField("category", st.StringType()),
         st.StructField("token", st.ArrayType(st.StringType(), True))

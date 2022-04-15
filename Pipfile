@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pyspark = "==3.2.0"
+python-dotenv = "==0.17.0"
+pandas = "==1.2.4"
+tqdm = "==4.60.0"
+pyyaml = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
