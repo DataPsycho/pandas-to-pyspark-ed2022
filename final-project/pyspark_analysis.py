@@ -222,7 +222,7 @@ show_popular_product(combined_df)
 # TODO: Task 6
 
 # Method 1: To check if there is enough data or not
-raw_sdf_meta.filter(fn.array_contains(col("category"), "Sports & Outdoors category")).show()
+raw_sdf_meta.filter(fn.array_contains(col("category"), "Sports & Outdoors")).show()
 
 # Method 2: To check if there is enough data or not
 raw_sdf_meta.select("asin", fn.explode("category")).filter(col("col") == "Sports & Outdoors").show()
