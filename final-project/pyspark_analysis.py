@@ -243,7 +243,11 @@ show_all_category(raw_sdf_meta)
 # This is a data for Home & Kitchen so there will be no data about Sports & Outdoors category
 # as you are going to have this kind of situation at work too. That you ask something, and you
 # get something else back from data engineering / operations team so always validate your data that what you
-# have asked for, and what you are receiving. This is the import first step before even you start a project
+# have asked for, and what you are receiving. This is the import first step before even you start a project.
+
+# What is the solution then?
+# Try to look for review and sample Data about Sports & Outdoors, like Home & Kitchen if you find data about that
+# then try to accomplish this task by your self.
 
 # THANK YOU !
 # LinkedIn: www.linkedin.com/in/mr-data-psycho
