@@ -18,7 +18,10 @@ print(len(raw_pdf))
 
 # TODO: Convert Unix Review Time to Python Datetime
 # Be aware of series object has no attribute applymap
-raw_pdf['reviewed_at'] = raw_pdf[['unix_review_time']].applymap(datetime.fromtimestamp)
+raw_pdf['reviewed_at'] = (
+    raw_pdf[['unix_review_time']]
+    .applymap(datetime.fromtimestamp)
+)
 
 # TODO: Impute NaN vote with Zero
 raw_pdf['vote'] = raw_pdf['vote'].fillna(value=0)
@@ -39,6 +42,7 @@ def average_review(df: pd.DataFrame) -> float:
 
 
 mean_over_all_review = average_review(raw_pdf)
+print(mean_over_all_review)
 
 # TODO: Total Number of Review by Product
 review_by_product = raw_pdf.groupby('asin')['asin'].count()

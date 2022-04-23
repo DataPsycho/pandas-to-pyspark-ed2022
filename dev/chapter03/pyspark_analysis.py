@@ -26,9 +26,22 @@ main_df.show(10)
 
 
 # TODO: Convert Unix Review Time to Python Datetime
-main_df = main_df.withColumn('reviewed_at', fn.from_unixtime(col('unix_review_time')))
-main_df = main_df.withColumn("reviewed_year", fn.year(col("reviewed_at")))
-main_df = main_df.withColumn("reviewed_month", fn.month(col("reviewed_at")))
+main_df = (
+    main_df
+    .withColumn(
+        'reviewed_at',
+        fn.from_unixtime(col('unix_review_time'))
+    )
+)
+main_df = (
+    main_df
+    .withColumn("reviewed_year", fn.year(col("reviewed_at")))
+)
+main_df = (
+    main_df
+    .withColumn("reviewed_month", fn.month(col("reviewed_at")))
+)
+main_df.show(n=5)
 
 
 # TODO: Impute NaN vote with Zero
@@ -50,6 +63,7 @@ def average_review(df: SparkDf) -> float:
 
 
 mean_over_all_review = average_review(main_df)
+print(mean_over_all_review)
 
 # TODO: Total Number of Review by Product
 review_by_product = main_df.groupby('asin').count()
