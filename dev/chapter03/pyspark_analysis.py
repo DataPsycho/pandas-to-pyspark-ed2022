@@ -33,14 +33,7 @@ main_df = (
         fn.from_unixtime(col('unix_review_time'))
     )
 )
-main_df = (
-    main_df
-    .withColumn("reviewed_year", fn.year(col("reviewed_at")))
-)
-main_df = (
-    main_df
-    .withColumn("reviewed_month", fn.month(col("reviewed_at")))
-)
+
 main_df.show(n=5)
 
 
@@ -90,7 +83,15 @@ def show_review_text_stat(df: SparkDf) -> None:
 
 show_review_text_stat(main_df)
 
-
+# TODO: Median Number of Reviews per Year
+main_df = (
+    main_df
+    .withColumn("reviewed_year", fn.year(col("reviewed_at")))
+)
+main_df = (
+    main_df
+    .withColumn("reviewed_month", fn.month(col("reviewed_at")))
+)
 median_review_by_year_df = (
     main_df
     .groupby('asin', 'review_year')
@@ -127,8 +128,15 @@ total_review_by_mth_df = (
     .orderBy('review_year', 'review_month')
 )
 
-total_review_2016 = total_review_by_mth_df.filter(col("review_year") == 2016)
-total_review_2017 = total_review_by_mth_df.filter(col("review_year") == 2017)
+total_review_2016 = (
+    total_review_by_mth_df
+    .filter(col("review_year") == 2016)
+)
+
+total_review_2017 = (
+    total_review_by_mth_df
+    .filter(col("review_year") == 2017)
+)
 
 merged_20_16_17 = (
     total_review_2016
@@ -141,6 +149,8 @@ merged_20_16_17 = (
         on="review_month"
     )
 )
+
+merged_20_16_17.show()
 
 
 # TODO: Functional representation of same problem
@@ -199,6 +209,7 @@ def execute_pipeline(df: SparkDf, year_x: int, year_y: int) -> SparkDf:
 temp_df = execute_pipeline(main_df, 2016, 2017)
 
 
+# TODO: Convert Wide format data into Long
 merged_20_16_17_united = total_review_2016.union(total_review_2017)
 
 merged_20_16_17_pivoted = (
@@ -209,6 +220,8 @@ merged_20_16_17_pivoted = (
     .orderBy("review_month")
 )
 
+merged_20_16_17_pivoted.show(n=4)
+
 
 # TODO: Drop The columns we Do not Need
 column_list = ['unix_review_time', 'review_time', 'summary']
@@ -217,5 +230,15 @@ main_df = main_df.drop(*column_list)
 
 # TODO: Store The Snapshot
 PATH_SNAPSHOT = create_path_snapshot_spark()
-main_df = main_df.repartition('review_year', 'review_month').sortWithinPartitions("asin")
-main_df.write.partitionBy('review_year', 'review_month').mode("overwrite").parquet(PATH_SNAPSHOT)
+main_df = (
+    main_df
+    .repartition('review_year', 'review_month')
+    .sortWithinPartitions("asin")
+)
+
+(
+    main_df
+    .write.partitionBy('review_year', 'review_month')
+    .mode("overwrite")
+    .parquet(PATH_SNAPSHOT)
+)

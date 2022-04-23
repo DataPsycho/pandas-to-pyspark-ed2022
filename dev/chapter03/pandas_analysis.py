@@ -114,6 +114,13 @@ merged_20_16_17 = (
     .sort_values("review_month")
 )
 
+(merged_20_16_17[
+     ['review_month',
+      'total_review_2016',
+      'total_review_2017']
+ ].head()
+)
+
 
 # TODO: Convert Wide format data into Long
 merged_20_1617_long = (
@@ -122,7 +129,10 @@ merged_20_1617_long = (
 )
 merged_20_1617_wide = (
     merged_20_1617_long
-    .pivot(index="review_month", columns="variable", values="value").reset_index()
+    .pivot(
+        index="review_month",
+        columns="variable", values="value"
+    ).reset_index()
 )
 
 
